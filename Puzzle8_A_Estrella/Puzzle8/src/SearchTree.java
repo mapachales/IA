@@ -1,4 +1,3 @@
-import Puzzle8.Node;
 import java.util.*;
 
 public class SearchTree {

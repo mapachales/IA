@@ -1,5 +1,3 @@
-package Puzzle8;
-
 public class Node {
     private String state; // Estado inicial
     private int g; // Costo de inicio a nodo
