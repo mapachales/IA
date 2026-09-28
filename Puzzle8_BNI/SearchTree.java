@@ -12,6 +12,7 @@ public class SearchTree {
     String initialState;
     String goalState;
 
+    // Constructor.
     public SearchTree(String initialState, String goalState) {
         this.initialState = initialState;
         this.goalState = goalState;
@@ -22,12 +23,12 @@ public class SearchTree {
     private void printMetrics(String algoName, Node goalNode, int iterations, long startTime) {
         double totalSeconds = (System.nanoTime() - startTime) / 1_000_000_000.0;
         
-        System.out.println("Resultados del algoritmo:" + algoName);
+        System.out.println("Resultados del algoritmo: " + algoName);
         if (goalNode != null) {
             System.out.println("Goal State: Alcanzado.");
             System.out.println("Profundidad de la busqueda: " + goalNode.getDepth());
             System.out.println("Iteraciones: " + iterations);
-            System.out.println("Tiempo Total tomado para resolver:" + totalSeconds);
+            System.out.println("Tiempo Total tomado para resolver: " + totalSeconds);
         } else {
             System.out.println("Goal State: No alcanzado.");
         }
@@ -37,17 +38,19 @@ public class SearchTree {
     // Busqueda en anchura (BFS)
     public void breadthFirstSearch() {
         long startTime = System.nanoTime();
-        Set<String> visited = new HashSet<>();
+        Set<String> visited = new HashSet<>(); // Evitar repetir estados.
         Queue<Node> queue = new LinkedList<>();
         
         queue.add(root);
         int iterations = 0;
 
+        // Mientras haya nodos en la cola, se extrae el primero y se guarda el estado como visitado.
         while (!queue.isEmpty()) {
             Node currentNode = queue.poll();
             visited.add(currentNode.getState());
             iterations++;
 
+            // Si coincide, se imprimen los resultados.
             if (currentNode.getState().equals(goalState)) {
                 printMetrics("BFS", currentNode, iterations, startTime);
                 return;
@@ -71,10 +74,12 @@ public class SearchTree {
         stack.push(root);
         int iterations = 0;
 
+        // Extraer ultimo nodo en la pila y marcarlo como visitado, luego generar sus hijos y agregarlos a la pila.
         while (!stack.isEmpty()) {
             Node currentNode = stack.pop();
             iterations++;
 
+            // Si coincide, se imprimen los resultados.
             if (currentNode.getState().equals(goalState)) {
                 printMetrics("DFS", currentNode, iterations, startTime);
                 return;
@@ -106,17 +111,19 @@ public class SearchTree {
             Node currentNode = pq.poll();
             iterations++;
 
+            // Si coincide, se imprimen los resultados.
             if (currentNode.getState().equals(goalState)) {
                 printMetrics("UCS", currentNode, iterations, startTime);
                 return;
             }
 
+            // Verifica si ya fue visitado, si no, lo marca y lo empuja a la pila.
             if (!visited.contains(currentNode.getState())) {
                 visited.add(currentNode.getState());
                 List<Node> children = NodeUtils.generateChildren(currentNode);
                 for (Node child : children) {
                     if (!visited.contains(child.getState())) {
-                        child.setCost(currentNode.getCost() + 1); // cada paso cuesta 1
+                        child.setCost(currentNode.getCost() + 1); // Cada paso cuesta 1.
                         pq.add(child);
                     }
                 }
@@ -124,37 +131,30 @@ public class SearchTree {
         }
     }
 
-    // Profundidad iterativa (IDS)
     public void iterativeDeepeningSearch() {
         long startTime = System.nanoTime();
         int iterations = 0;
 
-        // Probar de 0 a 50
+        // Incrementa el limite de profundidad de 0 a 50.
         for (int limit = 0; limit <= 50; limit++) {
-            Set<String> visited = new HashSet<>();
-            Stack<Node> stack = new Stack<>();
-            
+            Stack<Node> stack = new Stack<>(); // Cada nuevo limite reinicia la pila e inserta el nodo raiz.
             stack.push(root);
 
             while (!stack.isEmpty()) {
                 Node currentNode = stack.pop();
                 iterations++;
 
+                // Verificaa si alcanzo la meta.
                 if (currentNode.getState().equals(goalState)) {
                     printMetrics("IDS", currentNode, iterations, startTime);
                     return;
                 }
-
-                // Expandir si la profundidad del nodo actual es menor que el límite
+                
+                // Si la profundidad es menor al limite, genera sus hijos y los ingresa a la pila. Si se alcanza el limite, detiene la expansion.
                 if (currentNode.getDepth() < limit) {
-                    if (!visited.contains(currentNode.getState())) {
-                        visited.add(currentNode.getState());
-                        List<Node> children = NodeUtils.generateChildren(currentNode);
-                        for (Node child : children) {
-                            if (!visited.contains(child.getState())) {
-                                stack.push(child);
-                            }
-                        }
+                    List<Node> children = NodeUtils.generateChildren(currentNode);
+                    for (Node child : children) {
+                        stack.push(child);
                     }
                 }
             }
